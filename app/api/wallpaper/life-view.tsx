@@ -73,7 +73,7 @@ export function LifeView({ width, height, birthDate }: LifeViewProps) {
     // Generate SVG circles for optimized rendering
     const pastCircles = [];
     const futureCircles = [];
-    let currentDotPosition = { x: 0, y: 0 };
+    let currentDotPosition = { cx: 0, cy: 0, radius: 0 };
 
     for (let i = 0; i < TOTAL_DOTS; i++) {
         const row = Math.floor(i / cols);
