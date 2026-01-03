@@ -44,6 +44,9 @@ export interface UserProfile {
   
   /** Selected phone device information */
   device: {
+    /** Device brand (e.g., "Apple", "Samsung") */
+    brand: string;
+    
     /** Full model name matching DeviceModel.model */
     modelName: string;
     

@@ -9,10 +9,14 @@ import { useState } from 'react';
 
 interface SetupInstructionsProps {
   wallpaperUrl: string;
+  selectedBrand: string;
 }
 
-export default function SetupInstructions({ wallpaperUrl }: SetupInstructionsProps) {
+export default function SetupInstructions({ wallpaperUrl, selectedBrand }: SetupInstructionsProps) {
   const [openSection, setOpenSection] = useState<'ios' | 'android' | null>(null);
+  
+  const isIOS = selectedBrand === 'Apple';
+  const isAndroid = selectedBrand !== 'Apple' && selectedBrand !== '';
 
   const toggleSection = (section: 'ios' | 'android') => {
     setOpenSection(openSection === section ? null : section);
@@ -26,6 +30,7 @@ export default function SetupInstructions({ wallpaperUrl }: SetupInstructionsPro
 
       <div className="space-y-2">
         {/* iOS Instructions */}
+        {isIOS && (
         <div className="border border-white/5 rounded bg-white/5 overflow-hidden">
           <button
             onClick={() => toggleSection('ios')}
@@ -47,8 +52,10 @@ export default function SetupInstructions({ wallpaperUrl }: SetupInstructionsPro
             </div>
           )}
         </div>
+        )}
 
         {/* Android Instructions */}
+        {isAndroid && (
         <div className="border border-white/5 rounded bg-white/5 overflow-hidden">
           <button
             onClick={() => toggleSection('android')}
@@ -60,7 +67,7 @@ export default function SetupInstructions({ wallpaperUrl }: SetupInstructionsPro
 
           {openSection === 'android' && (
             <div className="px-4 py-4 border-t border-white/5 text-sm text-neutral-400 space-y-2">
-              <p>1. Use <strong className="text-white">MacroDroid</strong> (or Tasker).</p>
+              <p>1. Use <a href="https://play.google.com/store/apps/details?id=com.arlosoft.macrodroid&hl=en" target="_blank" rel="noopener noreferrer" className="text-white hover:underline">MacroDroid</a> (or Tasker).</p>
               <p>2. Create a macro with:</p>
               <ul className="pl-4 list-disc space-y-1 text-neutral-500">
                 <li>Trigger: <strong className="text-neutral-300">Time of Day</strong> (00:00).</li>
@@ -70,6 +77,7 @@ export default function SetupInstructions({ wallpaperUrl }: SetupInstructionsPro
             </div>
           )}
         </div>
+        )}
       </div>
     </div>
   );

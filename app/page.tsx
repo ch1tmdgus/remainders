@@ -32,7 +32,7 @@ export default function Home() {
 
         if (profile.device) {
           setSelectedDevice({
-            brand: '',
+            brand: profile.device.brand || '',
             model: profile.device.modelName,
             width: profile.device.width,
             height: profile.device.height,
@@ -50,6 +50,7 @@ export default function Home() {
         birthDate,
         themeColor: THEME_COLOR,
         device: {
+          brand: selectedDevice.brand,
           modelName: selectedDevice.model,
           width: selectedDevice.width,
           height: selectedDevice.height,
@@ -82,6 +83,13 @@ export default function Home() {
     const url = `${baseUrl}/api/wallpaper?${params.toString()}`;
     setWallpaperUrl(url);
   };
+
+  // Auto-generate wallpaper URL when data is loaded from localStorage
+  useEffect(() => {
+    if (isFormComplete && !wallpaperUrl) {
+      generateWallpaperUrl();
+    }
+  }, [selectedDevice, birthDate, viewMode]);
 
   const copyToClipboard = async () => {
     try {
@@ -160,7 +168,7 @@ export default function Home() {
               </a>
             </div>
 
-            <SetupInstructions wallpaperUrl={wallpaperUrl} />
+            <SetupInstructions wallpaperUrl={wallpaperUrl} selectedBrand={selectedDevice?.brand || ''} />
           </div>
         )}
       </div>
