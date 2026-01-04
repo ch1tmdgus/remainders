@@ -1,6 +1,6 @@
 # <img src="public/logo.png" width="35" align="center" /> Remainders   
 
- <img  align="right" src="public/Year.webp" alt="Year View" width="25%" />
+ <img  align="right" src="public/Year.webp" alt="Year View" width="27%" />
  
 **Memento Mori.** Remember you must die. Your daily reminder to live intentionally.
 
