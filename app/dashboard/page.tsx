@@ -203,7 +203,7 @@ export default function DashboardPage() {
         modelName: selectedDevice.model,
         width: selectedDevice.width,
         height: selectedDevice.height,
-      } : null;
+      } : undefined;
       
       const defaultConfig = {
         colors: colors,

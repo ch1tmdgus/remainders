@@ -255,32 +255,38 @@ export async function processPlugins(
   for (const pluginConfig of plugins) {
     if (!pluginConfig.enabled) continue;
 
-    const pluginDef = pluginDefinitions.get(pluginConfig.id);
+    const pluginDef = pluginDefinitions.get(pluginConfig.pluginId);
     if (!pluginDef) {
-      errors.set(pluginConfig.id, 'Plugin definition not found');
+      errors.set(pluginConfig.pluginId, 'Plugin definition not found');
       continue;
     }
 
     // Create plugin-specific context
     const context: PluginContext = {
       ...baseContext,
-      settings: pluginConfig.settings
+      settings: pluginConfig.config
     };
+
+    // Skip if plugin has no code
+    if (!pluginDef.code) {
+      errors.set(pluginConfig.pluginId, 'Plugin has no executable code');
+      continue;
+    }
 
     // Try calculation hook
     const calcResult = await executePluginCalculation(pluginDef.code, context);
     if (calcResult.error) {
-      errors.set(pluginConfig.id, calcResult.error);
+      errors.set(pluginConfig.pluginId, calcResult.error);
     } else if (calcResult.result) {
-      calculationResults.set(pluginConfig.id, calcResult.result);
+      calculationResults.set(pluginConfig.pluginId, calcResult.result);
     }
 
     // Try render hook
     const renderResult = await executePluginRender(pluginDef.code, context);
     if (renderResult.error) {
-      errors.set(pluginConfig.id, renderResult.error);
+      errors.set(pluginConfig.pluginId, renderResult.error);
     } else if (renderResult.result) {
-      renderResults.set(pluginConfig.id, renderResult.result);
+      renderResults.set(pluginConfig.pluginId, renderResult.result);
     }
   }
 

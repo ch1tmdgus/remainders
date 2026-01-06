@@ -7,13 +7,13 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
-export default function PluginSubmissionPage() {
+function PluginSubmissionForm() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -304,5 +304,13 @@ return {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function PluginSubmissionPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
+      <PluginSubmissionForm />
+    </Suspense>
   );
 }

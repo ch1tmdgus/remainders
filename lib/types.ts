@@ -300,6 +300,9 @@ export interface PluginRenderElement {
   /** Font size (for text) */
   fontSize?: number;
   
+  /** Font family (for text) */
+  fontFamily?: string;
+  
   /** Color */
   color?: string;
   

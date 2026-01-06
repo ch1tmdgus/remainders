@@ -102,13 +102,13 @@ export async function signOut() {
 }
 
 /**
- *if (!auth) {
+ * Subscribe to authentication state changes
+ */
+export function onAuthChange(callback: (user: User | null) => void) {
+  if (!auth) {
     console.warn('Auth not initialized (server-side)');
     return () => {}; // Return empty unsubscribe function
   }
-   Subscribe to authentication state changes
- */
-export function onAuthChange(callback: (user: User | null) => void) {
   return onAuthStateChanged(auth, callback);
 }
 
@@ -120,6 +120,10 @@ export function onAuthChange(callback: (user: User | null) => void) {
  * Check if username is available
  */
 export async function isUsernameAvailable(username: string): Promise<boolean> {
+  if (!db) {
+    console.error('Firestore not initialized');
+    return false;
+  }
   try {
     const usernameDoc = await getDoc(doc(db, 'usernames', username.toLowerCase()));
     return !usernameDoc.exists();
