@@ -31,6 +31,9 @@ const PRESET_COLORS = [
 ];
 
 export default function ThemeColorPicker({ selectedColor, onChange }: ThemeColorPickerProps) {
+  // Ensure we have a valid color value
+  const color = selectedColor || '#FF6B35';
+  
   return (
     <div className="w-full">
       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -39,21 +42,21 @@ export default function ThemeColorPicker({ selectedColor, onChange }: ThemeColor
       
       {/* Preset color swatches */}
       <div className="grid grid-cols-4 gap-3 mb-4">
-        {PRESET_COLORS.map((color) => (
+        {PRESET_COLORS.map((presetColor) => (
           <button
-            key={color.value}
+            key={presetColor.value}
             type="button"
-            onClick={() => onChange(color.value)}
+            onClick={() => onChange(presetColor.value)}
             className={`
               relative h-12 rounded-lg transition-all
               hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-              ${selectedColor === color.value ? 'ring-2 ring-offset-2 ring-gray-900' : ''}
+              ${color === presetColor.value ? 'ring-2 ring-offset-2 ring-gray-900' : ''}
             `}
-            style={{ backgroundColor: color.value }}
-            title={color.name}
+            style={{ backgroundColor: presetColor.value }}
+            title={presetColor.name}
           >
             {/* Checkmark for selected color */}
-            {selectedColor === color.value && (
+            {selectedColor === presetColor.value && (
               <span className="absolute inset-0 flex items-center justify-center text-white text-xl font-bold">
                 ✓
               </span>
@@ -71,14 +74,14 @@ export default function ThemeColorPicker({ selectedColor, onChange }: ThemeColor
         <input
           id="customColor"
           type="color"
-          value={selectedColor}
+          value={color}
           onChange={(e) => onChange(e.target.value)}
           className="h-10 w-20 border border-gray-300 rounded cursor-pointer"
         />
         
         {/* Display current color hex value */}
         <span className="text-sm font-mono text-gray-500">
-          {selectedColor.toUpperCase()}
+          {color.toUpperCase()}
         </span>
       </div>
       

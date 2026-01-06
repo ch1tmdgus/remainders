@@ -81,3 +81,286 @@ export interface WallpaperParams {
   /** View mode: 'year' or 'life' */
   viewMode: ViewMode;
 }
+
+/**
+ * Text element that can be added to wallpaper
+ */
+export interface TextElement {
+  /** Unique identifier for the text element */
+  id: string;
+  
+  /** Text content to display */
+  content: string;
+  
+  /** Position X (percentage 0-100) */
+  x: number;
+  
+  /** Position Y (percentage 0-100) */
+  y: number;
+  
+  /** Font size in pixels */
+  fontSize: number;
+  
+  /** Font family name */
+  fontFamily: string;
+  
+  /** Text color in hex format */
+  color: string;
+  
+  /** Text alignment */
+  align: 'left' | 'center' | 'right';
+  
+  /** Whether element is visible */
+  visible: boolean;
+}
+
+/**
+ * Plugin configuration schema
+ */
+export interface PluginConfig {
+  /** Plugin ID reference */
+  pluginId: string;
+  
+  /** Whether plugin is enabled */
+  enabled: boolean;
+  
+  /** Plugin-specific configuration (JSON object) */
+  config: Record<string, any>;
+}
+
+/**
+ * Complete user configuration stored in Firestore
+ */
+export interface UserConfig {
+  /** User ID from Firebase Auth */
+  userId: string;
+  
+  /** Unique username (lowercase) */
+  username: string;
+  
+  /** Birth date in YYYY-MM-DD format */
+  birthDate: string;
+  
+  /** View mode: year or life */
+  viewMode: ViewMode;
+  
+  /** Device dimensions */
+  device: {
+    brand: string;
+    modelName: string;
+    width: number;
+    height: number;
+  };
+  
+  /** Visual customization */
+  colors: {
+    background: string;
+    past: string;
+    current: string;
+    future: string;
+    text: string;
+  };
+  
+  /** Typography settings */
+  typography: {
+    fontFamily: string;
+    fontSize: number;
+    statsVisible: boolean;
+  };
+  
+  /** Custom text elements */
+  textElements: TextElement[];
+  
+  /** Layout preferences */
+  layout: {
+    topPadding: number;
+    bottomPadding: number;
+    sidePadding: number;
+    dotSpacing: number;
+  };
+  
+  /** Enabled plugins */
+  plugins: PluginConfig[];
+  
+  /** Monday as first day of week (for year view) */
+  isMondayFirst: boolean;
+  
+  /** User's timezone (IANA format) */
+  timezone?: string;
+  
+  /** Last updated timestamp */
+  updatedAt: Date | null;
+}
+
+/**
+ * Plugin definition stored in Firestore marketplace
+ */
+export interface Plugin {
+  /** Plugin unique ID */
+  id: string;
+  
+  /** Display name */
+  name: string;
+  
+  /** Short description */
+  description: string;
+  
+  /** Plugin author */
+  author: string;
+  
+  /** Version string (semver) */
+  version: string;
+  
+  /** Plugin code (JavaScript string) */
+  code?: string;
+  
+  /** Configuration schema (JSON Schema) */
+  configSchema: Record<string, any>;
+  
+  /** Admin approval status */
+  approved?: boolean;
+  
+  /** Download count */
+  downloads?: number;
+  
+  /** Plugin rating */
+  rating?: number;
+  
+  /** Creation timestamp */
+  createdAt?: Date;
+  
+  /** Last update timestamp */
+  updatedAt?: Date;
+  
+  /** Plugin execution function (not stored in Firestore) */
+  execute?: (ctx: PluginExecutionContext) => PluginRenderElement[];
+}
+
+/**
+ * Plugin execution context passed to plugin code
+ */
+export interface PluginExecutionContext {
+  /** Plugin configuration */
+  config: Record<string, any>;
+  
+  /** Wallpaper width */
+  width: number;
+  
+  /** Wallpaper height */
+  height: number;
+  
+  /** Color scheme */
+  colors?: {
+    background: string;
+    past: string;
+    current: string;
+    future: string;
+    text: string;
+  };
+  
+  /** Typography settings */
+  typography?: {
+    fontFamily: string;
+    fontSize: number;
+    statsVisible: boolean;
+  };
+  
+  /** Birth date */
+  birthDate?: string;
+  
+  /** View mode */
+  viewMode?: ViewMode;
+}
+
+/**
+ * Render element returned by plugin
+ */
+export interface PluginRenderElement {
+  /** Element type */
+  type: 'text' | 'rect' | 'circle' | 'line';
+  
+  /** Element content (for text) */
+  content?: string;
+  
+  /** X position */
+  x: number;
+  
+  /** Y position */
+  y: number;
+  
+  /** Width (for rect) */
+  width?: number;
+  
+  /** Height (for rect) */
+  height?: number;
+  
+  /** Radius (for circle) */
+  radius?: number;
+  
+  /** Font size (for text) */
+  fontSize?: number;
+  
+  /** Color */
+  color?: string;
+  
+  /** Text alignment */
+  align?: 'left' | 'center' | 'right';
+  
+  /** Max width for text wrapping */
+  maxWidth?: number;
+}
+
+/**
+ * Plugin execution context passed to plugin code (deprecated, use PluginExecutionContext)
+ */
+export interface PluginContext {
+  /** Current date in user's timezone */
+  currentDate: Date;
+  
+  /** User's birthdate */
+  birthDate: string;
+  
+  /** Device dimensions */
+  width: number;
+  height: number;
+  
+  /** View mode */
+  viewMode: ViewMode;
+  
+  /** Plugin settings */
+  settings: Record<string, any>;
+  
+  /** Utility functions available to plugin */
+  utils: {
+    /** Format date according to locale */
+    formatDate: (date: Date, format: string) => string;
+    
+    /** Get weeks lived */
+    getWeeksLived: (birthDate: string) => number;
+    
+    /** Get current day of year */
+    getCurrentDayOfYear: () => number;
+  };
+}
+
+/**
+ * Plugin hook return type for calculation modifiers
+ */
+export interface PluginCalculationResult {
+  /** Modified current date (for timezone plugins) */
+  currentDate?: Date;
+  
+  /** Additional data to pass to rendering */
+  data?: Record<string, any>;
+}
+
+/**
+ * Plugin hook return type for rendering extensions
+ */
+export interface PluginRenderResult {
+  /** Additional SVG/HTML elements to render */
+  elements?: string;
+  
+  /** Modified color palette */
+  colors?: Partial<UserConfig['colors']>;
+}
