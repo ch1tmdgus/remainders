@@ -37,6 +37,7 @@ interface YearViewProps {
   textElements?: TextElement[];
   pluginElements?: any[];
   currentDate?: Date;
+  timezone?: string;
 }
 
 export default function YearView({
@@ -64,12 +65,13 @@ export default function YearView({
   textElements = [],
   pluginElements = [],
   currentDate = new Date(),
+  timezone = 'UTC',
 }: YearViewProps) {
   // Year Logic
   const date = currentDate;
   const currentYear = date.getFullYear();
-  const currentDayOfYear = getCurrentDayOfYear();
-  const daysLeft = calculateDaysLeftInYear();
+  const currentDayOfYear = getCurrentDayOfYear(timezone);
+  const daysLeft = calculateDaysLeftInYear(timezone);
   const totalDays = getTotalDaysInCurrentYear();
 
   // Grid Layout Config

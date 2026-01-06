@@ -270,6 +270,12 @@ export interface PluginExecutionContext {
   
   /** View mode */
   viewMode?: ViewMode;
+  
+  /** User's timezone (IANA format) */
+  timezone?: string;
+  
+  /** Current date in user's timezone */
+  currentDate?: Date;
 }
 
 /**

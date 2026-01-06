@@ -11,6 +11,42 @@
  */
 
 /**
+ * Get current date in the specified timezone
+ * Uses Intl.DateTimeFormat to convert UTC to target timezone
+ * 
+ * @param timezone - IANA timezone string (e.g., 'America/New_York', 'Asia/Tokyo')
+ * @returns Date object representing current time in the specified timezone
+ */
+function getDateInTimezone(timezone: string = 'UTC'): Date {
+  // Get current UTC time
+  const now = new Date();
+  
+  // Use Intl API to get date parts in target timezone
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+  
+  const parts = formatter.formatToParts(now);
+  const dateParts: Record<string, string> = {};
+  
+  parts.forEach(({ type, value }) => {
+    dateParts[type] = value;
+  });
+  
+  // Construct date in target timezone
+  return new Date(
+    `${dateParts.year}-${dateParts.month}-${dateParts.day}T${dateParts.hour}:${dateParts.minute}:${dateParts.second}`
+  );
+}
+
+/**
  * Life expectancy constant (in years)
  * Based on global average life expectancy
  */
@@ -42,12 +78,12 @@ export const WEEKS_PER_YEAR = 52;
  * @example
  * calculateWeeksLived('1990-01-15') // Returns weeks lived since Jan 15, 1990
  */
-export function calculateWeeksLived(birthDate: string): number {
+export function calculateWeeksLived(birthDate: string, timezone: string = 'UTC'): number {
   // Parse the birth date string into a Date object
   const birth = new Date(birthDate);
   
-  // Get today's date
-  const today = new Date();
+  // Get today's date in the user's timezone
+  const today = getDateInTimezone(timezone);
   
   // Calculate the difference in milliseconds
   const diffInMs = today.getTime() - birth.getTime();
@@ -117,8 +153,8 @@ export function calculateWeeksRemaining(weeksLived: number): number {
  * @example
  * getCurrentWeekOfYear() // Returns 1-52 depending on current date
  */
-export function getCurrentWeekOfYear(): number {
-  const today = new Date();
+export function getCurrentWeekOfYear(timezone: string = 'UTC'): number {
+  const today = getDateInTimezone(timezone);
   
   // Get January 1st of the current year
   const startOfYear = new Date(today.getFullYear(), 0, 1);
@@ -203,8 +239,8 @@ export function calculateWeeksInCurrentYear(birthDate: string): number {
  * @example
  * getCurrentDayOfYear() // Returns 3 on January 3rd
  */
-export function getCurrentDayOfYear(): number {
-  const today = new Date();
+export function getCurrentDayOfYear(timezone: string = 'UTC'): number {
+  const today = getDateInTimezone(timezone);
   
   // Get January 1st of the current year
   const startOfYear = new Date(today.getFullYear(), 0, 1);
@@ -230,15 +266,15 @@ export function getCurrentDayOfYear(): number {
  * @example
  * calculateDaysLeftInYear() // Returns 362 on January 3rd (non-leap year)
  */
-export function calculateDaysLeftInYear(): number {
-  const today = new Date();
+export function calculateDaysLeftInYear(timezone: string = 'UTC'): number {
+  const today = getDateInTimezone(timezone);
   const currentYear = today.getFullYear();
   
   // Check if leap year
   const isLeapYear = (currentYear % 4 === 0 && currentYear % 100 !== 0) || (currentYear % 400 === 0);
   const totalDaysInYear = isLeapYear ? 366 : 365;
   
-  const currentDay = getCurrentDayOfYear();
+  const currentDay = getCurrentDayOfYear(timezone);
   
   return totalDaysInYear - currentDay;
 }

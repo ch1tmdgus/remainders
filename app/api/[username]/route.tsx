@@ -21,6 +21,35 @@ import { moonPhasePlugin } from '@/lib/plugins/moon-phase-plugin';
 
 export const runtime = 'edge';
 
+/**
+ * Get current date in the specified timezone
+ */
+function getDateInTimezone(timezone: string = 'UTC'): Date {
+  const now = new Date();
+  
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+  
+  const parts = formatter.formatToParts(now);
+  const dateParts: Record<string, string> = {};
+  
+  parts.forEach(({ type, value }) => {
+    dateParts[type] = value;
+  });
+  
+  return new Date(
+    `${dateParts.year}-${dateParts.month}-${dateParts.day}T${dateParts.hour}:${dateParts.minute}:${dateParts.second}`
+  );
+}
+
 // Rate limiting map (in-memory, resets on Edge function restart)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_MAX = 100; // requests per window
@@ -143,6 +172,10 @@ export async function GET(
       [moonPhasePlugin.id, moonPhasePlugin],
     ]);
 
+    // Get current date in user's timezone
+    const userTimezone = config.timezone || 'UTC';
+    const currentDate = getDateInTimezone(userTimezone);
+
     // Execute plugins and collect render elements
     const pluginRenderElements: any[] = [];
     console.log('Executing plugins, config.plugins count:', config.plugins?.length || 0);
@@ -195,6 +228,8 @@ export async function GET(
           typography: config.typography,
           birthDate: config.birthDate,
           viewMode: config.viewMode,
+          timezone: userTimezone,
+          currentDate: currentDate,
         });
         
         console.log(`Plugin ${pluginConfig.pluginId} returned ${elements?.length || 0} elements`);
@@ -208,10 +243,6 @@ export async function GET(
     
     console.log('Total plugin render elements:', pluginRenderElements.length);
     console.log('Sample plugin elements:', JSON.stringify(pluginRenderElements.slice(0, 3), null, 2));
-
-    // Get current date in user's timezone
-    const userTimezone = config.timezone || 'UTC';
-    const currentDate = new Date(new Date().toLocaleString('en-US', { timeZone: userTimezone }));
 
     // Prepare view props
     const viewProps = {
@@ -235,6 +266,7 @@ export async function GET(
       view = YearView({
         ...viewProps,
         isMondayFirst: config.isMondayFirst || false,
+        timezone: userTimezone,
       });
     }
 
