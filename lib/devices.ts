@@ -30,15 +30,15 @@ export const DEVICE_MODELS: DeviceModel[] = [
   },
   {
     brand: 'Apple',
-    model: 'iPhone 17 Plus',
+    model: 'iPhone Air',
     width: 1290,
     height: 2796,
   },
   {
     brand: 'Apple',
     model: 'iPhone 17',
-    width: 1179,
-    height: 2556,
+    width: 1206,
+    height: 2622,
   },
   {
     brand: 'Apple',
