@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { saveUserProfile, saveUserConfig, isUsernameAvailable, getUserConfigByUsername } from '@/lib/firebase';
@@ -82,6 +82,15 @@ export default function DashboardPage() {
   
   // Reset confirmation state
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  
+  // Auto-save with debouncing
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [autoSaving, setAutoSaving] = useState(false);
+
+  // Calculate if config is complete (needed before useEffects)
+  const isConfigComplete = viewMode === 'year' 
+    ? selectedDevice !== null 
+    : (birthDate && selectedDevice);
 
   useEffect(() => {
     setMounted(true);
@@ -100,7 +109,7 @@ export default function DashboardPage() {
     }
   }, [userProfile]);
 
-  // Track changes for unsaved indicator
+  // Track changes and trigger auto-save with debouncing
   useEffect(() => {
     if (!config) return;
     
@@ -140,7 +149,30 @@ export default function DashboardPage() {
     
     const hasChanges = JSON.stringify(currentState) !== JSON.stringify(savedState);
     setHasUnsavedChanges(hasChanges);
-  }, [colors, fontFamily, fontSize, statsVisible, layout, plugins, textElements, viewMode, birthDate, isMondayFirst, timezone, selectedDevice, config]);
+    
+    // Auto-save with 2-second debounce
+    if (hasChanges && isConfigComplete) {
+      // Clear existing timeout
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      
+      // Set new timeout for auto-save
+      saveTimeoutRef.current = setTimeout(() => {
+        setAutoSaving(true);
+        saveConfig().finally(() => {
+          setAutoSaving(false);
+        });
+      }, 2000); // 2 seconds after last change
+    }
+    
+    // Cleanup timeout on unmount
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [colors, fontFamily, fontSize, statsVisible, layout, plugins, textElements, viewMode, birthDate, isMondayFirst, timezone, selectedDevice, config, isConfigComplete]);
 
   const loadUserConfig = async (username: string) => {
     const { data } = await getUserConfigByUsername(username);
@@ -508,10 +540,6 @@ export default function DashboardPage() {
     
     setSaving(false);
   };
-
-  const isConfigComplete = viewMode === 'year' 
-    ? selectedDevice !== null 
-    : (birthDate && selectedDevice);
 
   if (loading || !mounted) {
     return (
@@ -1141,28 +1169,40 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Fixed Save Button at Bottom - Only shows when there are unsaved changes */}
-      {hasUnsavedChanges && (
-        <div className="fixed bottom-0 left-0 right-0 bg-neutral-900 border-t border-neutral-800 p-4 z-50">
-          <div className="max-w-6xl mx-auto">
-            <button
-              onClick={saveConfig}
-              disabled={!isConfigComplete || saving}
-              className="w-full py-3 bg-white text-black disabled:bg-neutral-800 disabled:text-neutral-600 hover:bg-neutral-200 transition-colors uppercase tracking-widest text-sm font-medium"
-            >
-              {saving ? 'Saving...' : 'Save Configuration'}
-            </button>
-            {saveMessage && (
-              <div className="text-center text-sm text-neutral-400 mt-2">
-                {saveMessage}
-              </div>
-            )}
-            {!isConfigComplete && (
-              <div className="text-center text-xs text-red-500 mt-2">
-                {viewMode === 'life' && !birthDate && 'Please enter your birth date'}
-                {!selectedDevice && 'Please select a device'}
-              </div>
-            )}
+      {/* Auto-save indicator */}
+      {(autoSaving || saving || saveMessage) && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className="bg-neutral-900 border border-neutral-700 rounded-lg px-4 py-2 shadow-lg">
+            <div className="flex items-center gap-2 text-sm">
+              {(autoSaving || saving) ? (
+                <>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span className="text-neutral-300">Saving...</span>
+                </>
+              ) : saveMessage.startsWith('✓') ? (
+                <>
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-green-500">{saveMessage}</span>
+                </>
+              ) : saveMessage.startsWith('✗') ? (
+                <>
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  <span className="text-red-500">{saveMessage}</span>
+                </>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Warning if config is incomplete */}
+      {hasUnsavedChanges && !isConfigComplete && (
+        <div className="fixed bottom-4 left-4 z-50">
+          <div className="bg-red-900/20 border border-red-500/50 rounded-lg px-4 py-2 shadow-lg">
+            <div className="text-xs text-red-400">
+              {viewMode === 'life' && !birthDate && '⚠ Please enter your birth date'}
+              {!selectedDevice && '⚠ Please select a device'}
+            </div>
           </div>
         </div>
       )}
