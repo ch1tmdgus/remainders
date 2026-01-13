@@ -20,6 +20,7 @@ export default function Home() {
   const [birthDate, setBirthDate] = useState('');
   const [selectedDevice, setSelectedDevice] = useState<DeviceModel | null>(null);
   const [viewMode, setViewMode] = useState<'year' | 'life'>('life');
+  const [isMondayFirst, setIsMondayFirst] = useState(false);
   const [wallpaperUrl, setWallpaperUrl] = useState('');
   const [copied, setCopied] = useState(false);
 
@@ -32,6 +33,7 @@ export default function Home() {
         const profile: UserProfile = JSON.parse(savedProfile);
         setBirthDate(profile.birthDate);
         if (profile.viewMode) setViewMode(profile.viewMode);
+        if (profile.isMondayFirst !== undefined) setIsMondayFirst(profile.isMondayFirst);
 
         if (profile.device) {
           setSelectedDevice({
@@ -61,6 +63,7 @@ export default function Home() {
           height: selectedDevice.height,
         },
         viewMode,
+        isMondayFirst,
       };
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
@@ -69,7 +72,7 @@ export default function Home() {
         console.error('Failed to save profile:', error);
       }
     }
-  }, [birthDate, selectedDevice, viewMode]);
+  }, [birthDate, selectedDevice, viewMode, isMondayFirst]);
 
   const generateWallpaperUrl = () => {
     if (!selectedDevice) return;
@@ -85,6 +88,10 @@ export default function Home() {
     if (viewMode === 'life' && birthDate) {
       params.append('birthDate', birthDate);
     }
+    
+    if (viewMode === 'year' && isMondayFirst) {
+      params.append('isMondayFirst', 'true');
+    }
 
     const baseUrl = typeof window !== 'undefined'
       ? `${window.location.protocol}//${window.location.host}`
@@ -99,7 +106,7 @@ export default function Home() {
     if (isFormComplete && !wallpaperUrl) {
       generateWallpaperUrl();
     }
-  }, [selectedDevice, birthDate, viewMode]);
+  }, [selectedDevice, birthDate, viewMode, isMondayFirst]);
 
   const copyToClipboard = async () => {
     try {
@@ -152,6 +159,22 @@ export default function Home() {
         {/* Configuration */}
         <section className="space-y-8 w-full" aria-label="Wallpaper Configuration">
           <ViewModeToggle selectedMode={viewMode} onChange={setViewMode} />
+          
+          {/* Monday First Toggle (only for year view) */}
+          {viewMode === 'year' && (
+            <div className="flex items-center justify-between p-4 border border-white/10 bg-white/5 rounded backdrop-blur-sm">
+              <label htmlFor="mondayFirst" className="text-sm text-neutral-300 cursor-pointer">
+                Start week on Monday
+              </label>
+              <input
+                type="checkbox"
+                id="mondayFirst"
+                checked={isMondayFirst}
+                onChange={(e) => setIsMondayFirst(e.target.checked)}
+                className="w-4 h-4 cursor-pointer accent-white"
+              />
+            </div>
+          )}
 
           <div className="space-y-6">
             {viewMode === 'life' && (

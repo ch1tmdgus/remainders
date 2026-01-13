@@ -59,6 +59,9 @@ export interface UserProfile {
   
   /** Visualization mode: year or life view */
   viewMode: ViewMode;
+  
+  /** Monday as first day of week (for year view) */
+  isMondayFirst?: boolean;
 }
 
 /**
@@ -80,6 +83,9 @@ export interface WallpaperParams {
   
   /** View mode: 'year' or 'life' */
   viewMode: ViewMode;
+  
+  /** Monday as first day of week (for year view) */
+  isMondayFirst?: boolean;
 }
 
 /**
