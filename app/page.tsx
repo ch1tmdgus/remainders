@@ -162,19 +162,17 @@ export default function Home() {
           
           {/* Monday First Toggle (only for year view) */}
           {viewMode === 'year' && (
-            <div className="group relative">
-              <div className="flex items-center justify-between py-2 border-b border-white/20 group-hover:border-white/40 transition-colors">
-                <label htmlFor="mondayFirst" className="text-xs uppercase tracking-widest text-neutral-500 cursor-pointer">
-                  Start week on Monday
-                </label>
-                <input
-                  type="checkbox"
-                  id="mondayFirst"
-                  checked={isMondayFirst}
-                  onChange={(e) => setIsMondayFirst(e.target.checked)}
-                  className="w-4 h-4 cursor-pointer accent-white"
-                />
-              </div>
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="mondayFirst"
+                checked={isMondayFirst}
+                onChange={(e) => setIsMondayFirst(e.target.checked)}
+                className="w-5 h-5 accent-white bg-neutral-800 border-2 border-white/20 rounded cursor-pointer"
+              />
+              <label htmlFor="mondayFirst" className="text-xs uppercase tracking-widest text-neutral-500 cursor-pointer">
+                Start week on Monday
+              </label>
             </div>
           )}
 
