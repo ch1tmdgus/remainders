@@ -19,7 +19,7 @@ import { quotesPlugin } from '@/lib/plugins/quotes-plugin';
 import { habitTrackerPlugin } from '@/lib/plugins/habit-tracker-plugin';
 import { moonPhasePlugin } from '@/lib/plugins/moon-phase-plugin';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 /**
  * Get current date in the specified timezone
