@@ -308,6 +308,14 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="w-full text-center py-4">
+                        <a
+          href="https://github.com/ch1tmdgus"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[10px] text-neutral-600 hover:text-neutral-400 uppercase tracking-widest transition-colors"
+        >
+          Forked by Ch1tmdgus
+        </a>
         <a
           href="https://github.com/Ti-03"
           target="_blank"
@@ -316,6 +324,7 @@ export default function Home() {
         >
           Created by Qutibah Ananzeh
         </a>
+
       </footer>
     </main>
   );
