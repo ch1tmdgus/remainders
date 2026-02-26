@@ -1,6 +1,6 @@
 /**
  * Remainders - Main Page Component
- * Minimalist Redesign
+ * Minimalist Redesign - Fixed Build Errors
  */
 
 'use client';
@@ -14,7 +14,7 @@ import SetupInstructions from '@/components/SetupInstructions';
 import AuthButton from '@/components/AuthButton';
 
 const STORAGE_KEY = 'remainders-user-profile';
-const THEME_COLOR = 'FFFFFF'; // White for minimalist dark theme
+const THEME_COLOR = 'FFFFFF'; 
 
 export default function Home() {
   const [birthDate, setBirthDate] = useState('');
@@ -29,7 +29,6 @@ export default function Home() {
   // Load from localStorage
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
     try {
       const savedProfile = localStorage.getItem(STORAGE_KEY);
       if (savedProfile) {
@@ -57,7 +56,6 @@ export default function Home() {
   // Save to localStorage
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
     if (birthDate && selectedDevice) {
       const profile: any = {
         birthDate,
@@ -92,20 +90,14 @@ export default function Home() {
       viewMode,
     });
 
-    if (viewMode === 'life' && birthDate) {
-      params.append('birthDate', birthDate);
-    }
-    
+    if (viewMode === 'life' && birthDate) params.append('birthDate', birthDate);
     if (viewMode === 'year') {
       if (isMondayFirst) params.append('isMondayFirst', 'true');
       params.append('yearViewLayout', yearViewLayout);
       if (yearViewLayout === 'days') params.append('daysLayoutMode', daysLayoutMode);
     }
 
-    const baseUrl = typeof window !== 'undefined'
-      ? `${window.location.protocol}//${window.location.host}`
-      : '';
-
+    const baseUrl = typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : '';
     setWallpaperUrl(`${baseUrl}/api/wallpaper?${params.toString()}`);
   };
 
@@ -141,18 +133,15 @@ export default function Home() {
               </svg>
             </a>
           </div>
-          <div className="space-y-1">
-            <p className="text-sm text-neutral-500 font-mono tracking-widest uppercase">Memento Mori</p>
-            <p className="sr-only">Generate life calendar wallpapers. Visualize your life for mindful living.</p>
-          </div>
+          <p className="text-sm text-neutral-500 font-mono tracking-widest uppercase">Memento Mori</p>
         </header>
 
         {/* Configuration */}
-        <section className="space-y-8 w-full" aria-label="Wallpaper Configuration">
+        <section className="space-y-8 w-full">
           <ViewModeToggle selectedMode={viewMode} onChange={setViewMode} />
           
           {viewMode === 'year' && (
-            <div className="space-y-6 animate-in fade-in duration-500">
+            <div className="space-y-6">
               <div className="space-y-2">
                 <label className="text-xs uppercase tracking-widest text-neutral-500">Layout</label>
                 <div className="flex gap-2">
@@ -175,48 +164,30 @@ export default function Home() {
                 <div className="space-y-2">
                   <label className="text-xs uppercase tracking-widest text-neutral-500">Days Mode</label>
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => setDaysLayoutMode('continuous')}
-                      className={`flex-1 py-3 text-xs uppercase tracking-widest transition-colors ${daysLayoutMode === 'continuous' ? 'bg-white text-black' : 'bg-neutral-900 text-neutral-500 hover:bg-neutral-800'}`}
-                    >
-                      Continuous
-                    </button>
-                    <button
-                      onClick={() => setDaysLayoutMode('calendar')}
-                      className={`flex-1 py-3 text-xs uppercase tracking-widest transition-colors ${daysLayoutMode === 'calendar' ? 'bg-white text-black' : 'bg-neutral-900 text-neutral-500 hover:bg-neutral-800'}`}
-                    >
-                      Calendar
-                    </button>
+                    <button onClick={() => setDaysLayoutMode('continuous')} className={`flex-1 py-3 text-xs uppercase tracking-widest transition-colors ${daysLayoutMode === 'continuous' ? 'bg-white text-black' : 'bg-neutral-900 text-neutral-500 hover:bg-neutral-800'}`}>Continuous</button>
+                    <button onClick={() => setDaysLayoutMode('calendar')} className={`flex-1 py-3 text-xs uppercase tracking-widest transition-colors ${daysLayoutMode === 'calendar' ? 'bg-white text-black' : 'bg-neutral-900 text-neutral-500 hover:bg-neutral-800'}`}>Calendar</button>
                   </div>
                 </div>
               )}
 
               {(yearViewLayout === 'months' || (yearViewLayout === 'days' && daysLayoutMode === 'calendar')) && (
-                <div className="flex items-center gap-3 pt-2">
+                <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
                     id="mondayFirst"
                     checked={isMondayFirst}
                     onChange={(e) => setIsMondayFirst(e.target.checked)}
-                    className="w-5 h-5 rounded cursor-pointer border-2 border-white/30 bg-black/50 checked:bg-white checked:border-white appearance-none relative checked:after:content-['✓'] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:-translate-x-1/2 checked:after:-translate-y-1/2 checked:after:text-black checked:after:text-sm checked:after:font-bold"
+                    className="w-5 h-5 rounded border-2 border-white/30 bg-black/50 checked:bg-white appearance-none relative checked:after:content-['✓'] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:-translate-x-1/2 checked:after:-translate-y-1/2 checked:after:text-black checked:after:font-bold"
                   />
-                  <label htmlFor="mondayFirst" className="text-xs uppercase tracking-widest text-neutral-500 cursor-pointer select-none">
-                    Start week on Monday
-                  </label>
+                  <label htmlFor="mondayFirst" className="text-xs uppercase tracking-widest text-neutral-500 cursor-pointer">Start week on Monday</label>
                 </div>
               )}
             </div>
           )}
 
           <div className="space-y-6">
-            {viewMode === 'life' && (
-              <BirthDateInput value={birthDate} onChange={setBirthDate} />
-            )}
-
-            <DeviceSelector
-              selectedModel={selectedDevice?.model || ''}
-              onSelect={setSelectedDevice}
-            />
+            {viewMode === 'life' && <BirthDateInput value={birthDate} onChange={setBirthDate} />}
+            <DeviceSelector selectedModel={selectedDevice?.model || ''} onSelect={setSelectedDevice} />
           </div>
 
           <button
@@ -230,37 +201,21 @@ export default function Home() {
 
         {/* Result Area */}
         {wallpaperUrl && (
-          <section className="w-full space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <section className="w-full space-y-4 animate-in fade-in duration-500">
             <div className="flex items-center gap-2 p-4 border border-white/10 bg-white/5 rounded backdrop-blur-sm">
-              <code className="text-xs text-neutral-400 truncate flex-1 font-mono">
-                {wallpaperUrl}
-              </code>
-              <button
-                onClick={copyToClipboard}
-                className="text-xs text-white hover:text-neutral-300 uppercase tracking-wider min-w-[60px]"
-              >
-                {copied ? 'Copied' : 'Copy'}
-              </button>
+              <code className="text-xs text-neutral-400 truncate flex-1 font-mono">{wallpaperUrl}</code>
+              <button onClick={copyToClipboard} className="text-xs text-white uppercase tracking-wider">{copied ? 'Copied' : 'Copy'}</button>
             </div>
-
             <div className="text-center">
-              <a
-                href={wallpaperUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-neutral-500 hover:text-white transition-colors border-b border-transparent hover:border-white pb-0.5"
-              >
-                Preview Wallpaper
-              </a>
+              <a href={wallpaperUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-white border-b border-transparent hover:border-white pb-0.5">Preview Wallpaper</a>
             </div>
-
             <SetupInstructions wallpaperUrl={wallpaperUrl} selectedBrand={selectedDevice?.brand || ''} />
           </section>
         )}
       </div>
 
-      {/* Footer - Wrapped in Parent Div */}
-      <footer className="w-full flex flex-col items-center gap-2 py-8 mt-12 border-t border-white/5">
+      {/* Footer - Wrapped in a Single Container */}
+      <footer className="w-full flex flex-col items-center gap-2 py-8 mt-8 border-t border-white/5">
         <a
           href="https://github.com/ch1tmdgus"
           target="_blank"
