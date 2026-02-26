@@ -106,6 +106,7 @@ export default function Home() {
       <AuthButton />
       
       <div className="w-full flex-1 flex flex-col items-center justify-center max-w-md space-y-12">
+        {/* Header - Fixed & Simplified */}
         <header className="text-center space-y-4 flex flex-col items-center">
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-light tracking-widest text-white uppercase">Remainders</h1>
@@ -136,18 +137,6 @@ export default function Home() {
                     <button onClick={() => setDaysLayoutMode('continuous')} className={`flex-1 py-3 text-xs uppercase tracking-widest transition-colors ${daysLayoutMode === 'continuous' ? 'bg-white text-black' : 'bg-neutral-900 text-neutral-500 hover:bg-neutral-800'}`}>Continuous</button>
                     <button onClick={() => setDaysLayoutMode('calendar')} className={`flex-1 py-3 text-xs uppercase tracking-widest transition-colors ${daysLayoutMode === 'calendar' ? 'bg-white text-black' : 'bg-neutral-900 text-neutral-500 hover:bg-neutral-800'}`}>Calendar</button>
                   </div>
-                </div>
-              )}
-              {(yearViewLayout === 'months' || (yearViewLayout === 'days' && daysLayoutMode === 'calendar')) && (
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    id="mondayFirst"
-                    checked={isMondayFirst}
-                    onChange={(e) => setIsMondayFirst(e.target.checked)}
-                    className="w-5 h-5 rounded cursor-pointer border-2 border-white/30 bg-black/50 checked:bg-white appearance-none relative checked:after:content-['✓'] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:-translate-x-1/2 checked:after:-translate-y-1/2 checked:after:text-black checked:after:font-bold"
-                  />
-                  <label htmlFor="mondayFirst" className="text-xs uppercase tracking-widest text-neutral-500 cursor-pointer">Start week on Monday</label>
                 </div>
               )}
             </div>
